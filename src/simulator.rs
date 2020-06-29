@@ -97,7 +97,7 @@ impl FeeMarketSimulator {
                 // let max_gas_used = control_blocks.len() as u64 * self.block_gas_limit;
                 // control_fullness = control_gas_used as f64 / max_gas_used as f64;
 
-                control_fullness = median(control_blocks.iter().map(|&b| b.get_fullness()))
+                control_fullness = median(control_blocks.iter().map(|&b| b.fullness()))
                     .expect("No blocks in the control range");
 
                 let increase = control_fullness > self.target_fullness;
@@ -127,7 +127,7 @@ impl FeeMarketSimulator {
             let mut new_block = Block::new(self.block_gas_limit);
             new_block.add_txs(included_txs);
 
-            let n_included_tx = new_block.get_n_tx();
+            let n_included_tx = new_block.tx_count();
             let n_unincluded_tx = n_sent_tx.saturating_sub(n_included_tx);
 
             self.blocks.push(new_block);
