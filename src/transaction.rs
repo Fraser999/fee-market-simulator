@@ -14,8 +14,8 @@ impl Transaction {
     pub fn new(gas_used: u64, gas_price: u64) -> Transaction {
         unsafe {
             let result = Transaction {
-                gas_used: gas_used,
-                gas_price: gas_price,
+                gas_used,
+                gas_price,
                 id: TX_COUNTER,
             };
             TX_COUNTER += 1;
@@ -43,7 +43,7 @@ impl TransactionPool {
     pub fn new(limit: usize) -> TransactionPool {
         TransactionPool {
             pool: SortedList::new(),
-            limit: limit,
+            limit,
         }
     }
 

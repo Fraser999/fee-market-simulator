@@ -25,8 +25,8 @@ impl LinearInterpolator {
         LinearInterpolator {
             x: x_,
             y: y_,
-            xmax: xmax,
-            xmin: xmin,
+            xmax,
+            xmin,
         }
     }
 

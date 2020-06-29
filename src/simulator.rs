@@ -45,14 +45,14 @@ impl FeeMarketSimulator {
         price_adjustment_rate: f64,
     ) -> FeeMarketSimulator {
         FeeMarketSimulator {
-            demand_curve: demand_curve,
-            initial_price: initial_price,
-            block_gas_limit: block_gas_limit,
-            tx_gas_used: tx_gas_used,
-            block_time: block_time,
-            control_range: control_range,
-            target_fullness: target_fullness,
-            price_adjustment_rate: price_adjustment_rate,
+            demand_curve,
+            initial_price,
+            block_gas_limit,
+            tx_gas_used,
+            block_time,
+            control_range,
+            target_fullness,
+            price_adjustment_rate,
             //
             txpool: TransactionPool::new(txpool_size),
             blocks: Vec::new(),

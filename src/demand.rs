@@ -59,8 +59,8 @@ impl DemandCurve {
         // let mut rng = &mut rand::thread_rng();
 
         DemandCurve {
-            p: p,
-            q: q,
+            p,
+            q,
             finv_vec,
             rng: rand::thread_rng(),
         }

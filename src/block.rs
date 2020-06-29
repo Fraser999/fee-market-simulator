@@ -10,7 +10,7 @@ impl Block {
     pub fn new(gas_limit: u64) -> Block {
         Block {
             txs: Vec::new(),
-            gas_limit: gas_limit,
+            gas_limit,
         }
     }
 
