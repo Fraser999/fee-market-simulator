@@ -22,6 +22,7 @@ impl Transaction {
             return result;
         }
     }
+
     fn get_fee(&self) -> u64 {
         self.gas_used * self.gas_price
     }

@@ -1,9 +1,10 @@
 use indicatif::ProgressBar;
-use stats::{mean, median};
-use std::env::{current_dir, join_paths};
+use stats::median;
+
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
+use std::iter;
 use std::path::PathBuf;
 
 use crate::block::Block;
@@ -69,7 +70,7 @@ impl FeeMarketSimulator {
         let mut output_csv_path = output_dir.clone();
         output_csv_path.push("out.csv");
 
-        fs::create_dir_all(output_dir);
+        let _ = fs::create_dir_all(output_dir);
 
         let mut output_csv_file = File::create(output_csv_path).unwrap();
 
@@ -78,12 +79,10 @@ impl FeeMarketSimulator {
         let bar = ProgressBar::new(n_user_vec.len() as u64);
 
         let mut fixed_price: u64 = self.initial_price;
-        let count = 0;
         let mut control_fullness: f64 = 0.;
 
         for x_ in 0..n_user_vec.len() {
             let x = x_ as u64;
-            let time = x * self.block_time;
             let n_user = n_user_vec[x_];
 
             if x > 0 && x % self.control_range == 0 {
@@ -116,8 +115,8 @@ impl FeeMarketSimulator {
 
             // println!("{} {}", n_user, wtp_vec.len());
             let n_sent_tx = wtp_vec.iter().filter(|&&x| x >= fixed_price).count() as u64;
-            let txs = (0..n_sent_tx)
-                .map(|x| Transaction::new(self.tx_gas_used, fixed_price))
+            let txs = iter::repeat(Transaction::new(self.tx_gas_used, fixed_price))
+                .take(n_sent_tx as usize)
                 .collect();
 
             self.txpool.add_txs(txs);

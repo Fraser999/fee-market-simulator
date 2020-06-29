@@ -6,19 +6,14 @@ use itertools_num::linspace;
 use ordered_float::OrderedFloat;
 use rand::rngs::ThreadRng;
 use rand::seq::SliceRandom;
-use std::iter::FromIterator;
+use std::iter::{self, FromIterator};
 
 use crate::helper::*;
-
-struct CsvRecord {
-    p: String,
-    q: u32,
-}
 
 pub struct DemandCurve {
     p: Vec<u64>,
     q: Vec<u64>,
-    Finv_vec: Vec<u64>,
+    finv_vec: Vec<u64>,
     rng: ThreadRng,
 }
 
@@ -32,7 +27,7 @@ impl DemandCurve {
             panic!("Input quantity vector must have 0 as the last element");
         }
 
-        let P_int = Vec::from_iter(linspace(
+        let p_int = Vec::from_iter(linspace(
             p.iter().min().unwrap().clone() as f64,
             p.iter().max().unwrap().clone() as f64,
             interp_resolution as usize,
@@ -43,20 +38,20 @@ impl DemandCurve {
         let p_f64 = p.iter().map(|&x| x as f64).collect();
         let q_f64 = q.iter().map(|&x| x as f64).collect();
 
-        let Q_val_interp = LinearInterpolator::new(&p_f64, &q_f64);
+        let q_val_interp = LinearInterpolator::new(&p_f64, &q_f64);
 
-        let mut Q_val: Vec<f64> = P_int.iter().map(|x| Q_val_interp.interpolate(*x)).collect();
+        let mut q_val: Vec<f64> = p_int.iter().map(|x| q_val_interp.interpolate(*x)).collect();
 
-        let Q_val_max = *Q_val.iter().max_by_key(|n| OrderedFloat(n.abs())).unwrap();
-        Q_val = Q_val.iter().map(|x| x / Q_val_max).collect();
+        let q_val_max = *q_val.iter().max_by_key(|n| OrderedFloat(n.abs())).unwrap();
+        q_val = q_val.iter().map(|x| x / q_val_max).collect();
 
-        let X = linspace(0., 1., interp_resolution as usize);
+        let x = linspace(0., 1., interp_resolution as usize);
 
-        let Finv_interp = LinearInterpolator::new(&Q_val, &P_int);
+        let finv_interp = LinearInterpolator::new(&q_val, &p_int);
 
-        let Finv_vec_f64: Vec<f64> = X.map(|x| Finv_interp.interpolate(x)).collect();
+        let finv_vec_f64: Vec<f64> = x.map(|x| finv_interp.interpolate(x)).collect();
 
-        let Finv_vec = Finv_vec_f64.iter().map(|&x| x as u64).collect();
+        let finv_vec = finv_vec_f64.iter().map(|&x| x as u64).collect();
         // println!("{:?}", Q_val);
         // println!("{:?}", P_int);
         // println!("{:?}", Finv_vec);
@@ -66,7 +61,7 @@ impl DemandCurve {
         DemandCurve {
             p: p,
             q: q,
-            Finv_vec: Finv_vec,
+            finv_vec,
             rng: rand::thread_rng(),
         }
     }
@@ -94,9 +89,8 @@ impl DemandCurve {
         //     .choose_multiple(&mut self.rng, size)
         //     .cloned()
         //     .collect()
-        let result: Vec<u64> = (0..size)
-            .map(|x| *(self.Finv_vec.choose(&mut self.rng).unwrap()))
-            .collect();
-        result
+        iter::repeat_with(|| *(self.finv_vec.choose(&mut self.rng).unwrap()))
+            .take(size)
+            .collect()
     }
 }
