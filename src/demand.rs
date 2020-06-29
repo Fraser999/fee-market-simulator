@@ -23,7 +23,7 @@ impl DemandCurve {
             panic!("Input price vector must be sorted in increasing order");
         }
 
-        if q.last().unwrap().clone() != 0 {
+        if q.last().unwrap() != &0 {
             panic!("Input quantity vector must have 0 as the last element");
         }
 
@@ -72,14 +72,16 @@ impl DemandCurve {
             .has_headers(true)
             .from_reader(file);
 
-        let mut p: Vec<u64> = Vec::new();
-        let mut q: Vec<u64> = Vec::new();
-
-        for record in reader.records() {
-            let record = record.unwrap();
-            p.push(record[0].parse().unwrap());
-            q.push(record[1].parse().unwrap());
-        }
+        let (p, q): (Vec<_>, Vec<_>) = reader
+            .records()
+            .map(|record| {
+                let record = record.unwrap();
+                (
+                    record[0].parse::<u64>().unwrap(),
+                    record[1].parse::<u64>().unwrap(),
+                )
+            })
+            .unzip();
 
         DemandCurve::new(p, q, interp_resolution)
     }
