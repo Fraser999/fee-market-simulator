@@ -28,7 +28,7 @@ use std::iter::FromIterator;
 ///     list.iter().collect::<Vec<_>>(),
 ///     vec![(&0, &0), (&0, &2), (&1, &1)]);
 /// ```
-pub struct SortedList<K: Ord, V: PartialEq> {
+pub struct SortedList<K, V> {
     keys: Vec<K>,
     values: Vec<V>,
 }
@@ -65,7 +65,7 @@ impl<K: Ord, V: PartialEq> SortedList<K, V> {
     pub fn insert(&mut self, key: K, value: V) -> bool {
         match self.keys.binary_search(&key) {
             Ok(found_at) => {
-                let insertion_position = self.find_insertion_positition(found_at, &key, &value);
+                let insertion_position = self.find_insertion_position(found_at, &key, &value);
 
                 if let Some(insertion_position) = insertion_position {
                     insertion_position.insert(key, value, &mut self.keys, &mut self.values);
@@ -95,7 +95,7 @@ impl<K: Ord, V: PartialEq> SortedList<K, V> {
         }
     }
 
-    fn find_insertion_positition(
+    fn find_insertion_position(
         &self,
         from: usize,
         key: &K,

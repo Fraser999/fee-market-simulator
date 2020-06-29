@@ -16,11 +16,10 @@ impl LinearInterpolator {
         let xmin = *x.iter().min_by_key(|n| OrderedFloat(n.abs())).unwrap();
 
         // X needs to be sorted, so we zip X & Y and sort the tuples
-        let mut both: Vec<(&f64, &f64)> = x.iter().zip(y.iter()).collect();
-        both.sort_by(|a, b| a.0.partial_cmp(b.0).unwrap());
+        let mut both: Vec<(f64, f64)> = x.iter().copied().zip(y.iter().copied()).collect();
+        both.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
 
-        let x_ = both.iter().map(|x| *x.0).collect();
-        let y_ = both.iter().map(|x| *x.1).collect();
+        let (x_, y_) = both.into_iter().unzip();
 
         LinearInterpolator {
             x: x_,

@@ -97,7 +97,7 @@ impl FeeMarketSimulator {
                 // let max_gas_used = control_blocks.len() as u64 * self.block_gas_limit;
                 // control_fullness = control_gas_used as f64 / max_gas_used as f64;
 
-                control_fullness = median(control_blocks.iter().map(|&b| b.fullness()))
+                control_fullness = median(control_blocks.into_iter().map(Block::fullness))
                     .expect("No blocks in the control range");
 
                 let increase = control_fullness > self.target_fullness;
