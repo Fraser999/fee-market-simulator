@@ -1,7 +1,7 @@
 use csv;
 use std::fs::File;
 
-use is_sorted;
+use is_sorted::IsSorted;
 use itertools_num::linspace;
 use ordered_float::OrderedFloat;
 use rand::rngs::ThreadRng;
@@ -24,7 +24,7 @@ pub struct DemandCurve {
 
 impl DemandCurve {
     pub fn new(p: Vec<u64>, q: Vec<u64>, interp_resolution: u64) -> DemandCurve {
-        if !p.is_sorted() {
+        if !IsSorted::is_sorted(&mut p.iter()) {
             panic!("Input price vector must be sorted in increasing order");
         }
 
